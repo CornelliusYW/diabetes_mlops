@@ -25,7 +25,7 @@ jobs:
 
     - name: Run data drift detection
       run: |
-        python scripts/detect_data_drift.py
+        python scripts/drift_detection.py
       continue-on-error: true 
 
     - name: Check for data drift

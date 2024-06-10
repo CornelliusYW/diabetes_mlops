@@ -9,9 +9,9 @@ from sklearn.metrics import accuracy_score, classification_report
 import pickle
 
 reference_data = pd.read_csv('data/reference_data.csv')
-drift_data = pd.read_csv('data/drift_data.csv')
+new_data = pd.read_csv('data/new_data.csv')
 
-df= pd.concat([reference_data, drift_data], ignore_index=True)
+df= pd.concat([reference_data, new_data], ignore_index=True)
 
 X = df.drop('Outcome', axis=1)
 y = df['Outcome']

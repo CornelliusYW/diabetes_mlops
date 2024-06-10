@@ -4,8 +4,5 @@ __pycache__/
 *.pyo
 venv/
 notebooks/.ipynb_checkpoints/
-Dockerfile
-
 .env
-
 .vscode/

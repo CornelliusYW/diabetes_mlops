@@ -1,0 +1,15 @@
+{
+    "name": "diabetes-mlops-project",
+    "description": "A MLOps project for detecting data drift and model retraining",
+    "env": {
+      "DOCKER_USERNAME": {
+        "description": "Docker Hub Username",
+        "required": true
+      },
+      "DOCKER_PASSWORD": {
+        "description": "Docker Hub Password",
+        "required": true
+      }
+    }
+  }
+  

@@ -4,13 +4,13 @@ from evidently.report import Report
 
 # Load your reference (training) and production (new) data
 reference_data = pd.read_csv('data/reference_data.csv')
-drift_data = pd.read_csv('data/drift_data.csv')
+new_data = pd.read_csv('data/new_data.csv')
 
 data_drift_report = Report(metrics=[
     DataDriftPreset()
 ])
 
-data_drift_report.run(reference_data=reference_data, current_data=drift_data, column_mapping=None)
+data_drift_report.run(reference_data=reference_data, current_data=new_data, column_mapping=None)
 
 report_json = data_drift_report.as_dict()
 drift_detected = report_json['metrics'][0]['result']['dataset_drift']

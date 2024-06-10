@@ -1,0 +1,11 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+venv/
+notebooks/.ipynb_checkpoints/
+Dockerfile
+
+.env
+
+.vscode/

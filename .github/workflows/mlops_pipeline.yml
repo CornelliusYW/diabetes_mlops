@@ -1,0 +1,78 @@
+name: MLOps Pipeline with Data Drift Detection
+
+on:
+  push:
+    paths:
+      - 'data/new_data.csv'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run data drift detection
+      run: |
+        python scripts/detect_data_drift.py
+      continue-on-error: true  # Continue even if data drift is not detected
+
+    - name: Check for data drift
+      id: check_drift
+      run: |
+        if grep -q 'drift_detected' drift_detected.txt; then
+          echo "Data drift detected."
+          echo "drift=true" >> $GITHUB_ENV
+        else
+          echo "No data drift detected."
+          echo "drift=false" >> $GITHUB_ENV
+
+    - name: Run preprocessing and model training pipeline
+            if: env.drift == 'true'
+      run: |
+        python scripts/train_model.py
+
+    - name: Commit and push updated model
+      if: env.drift == 'true'
+      env:
+        GIT_COMMITTER_NAME: github-actions
+        GIT_COMMITTER_EMAIL: github-actions@github.com
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git add models/pipeline.pkl
+        git commit -m "Update model after retraining"
+        git push
+
+    - name: Build Docker image
+      if: env.drift == 'true'
+      run: |
+        docker build -t username/mlops_project .
+
+    - name: Log in to Docker Hub
+      if: env.drift == 'true'
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Push Docker image to Docker Hub
+      if: env.drift == 'true'
+      run: |
+        docker push username/mlops_project:latest
+
+    - name: Notify about the process
+      run: |
+        if [[ "$GITHUB_ENV" == *"drift=false"* ]]; then
+          echo "No data drift detected. No retraining necessary."
+        else
+          echo "Data drift detected. Model retrained and deployed."
+

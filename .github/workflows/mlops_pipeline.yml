@@ -62,7 +62,7 @@ jobs:
     - name: Build Docker image
       if: env.drift == 'true'
       run: |
-        docker build -t cornelliusyudhawijaya/diabetes_prediction .
+        docker build -t cornelliusyudhawijaya/diabetes_prediction -f dockerfile .
 
     - name: Log in to Docker Hub
       if: env.drift == 'true'

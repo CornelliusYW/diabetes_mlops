@@ -79,3 +79,5 @@ jobs:
           echo "No data drift detected. No retraining necessary."
         else
           echo "Data drift detected. Model retrained and deployed."
+        fi
+      shell: bash

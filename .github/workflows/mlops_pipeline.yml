@@ -1,4 +1,4 @@
-name: MLOps Pipeline with Data Drift Detection
+name: Diabetes Retraining Pipeline with Data Drift Detection
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
     - name: Run data drift detection
       run: |
         python scripts/detect_data_drift.py
-      continue-on-error: true  # Continue even if data drift is not detected
+      continue-on-error: true 
 
     - name: Check for data drift
       id: check_drift
@@ -38,8 +38,8 @@ jobs:
           echo "No data drift detected."
           echo "drift=false" >> $GITHUB_ENV
 
-    - name: Run preprocessing and model training pipeline
-            if: env.drift == 'true'
+    - name: Model Retraining if Data Drift detected
+      if: env.drift == 'true'
       run: |
         python scripts/train_model.py
 
@@ -52,13 +52,13 @@ jobs:
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@github.com"
         git add models/pipeline.pkl
-        git commit -m "Update model after retraining"
+        git commit -m "Update model after retraining on $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
         git push
 
     - name: Build Docker image
       if: env.drift == 'true'
       run: |
-        docker build -t username/mlops_project .
+        docker build -t cornelliusyudhawijaya/diabetes_prediction .
 
     - name: Log in to Docker Hub
       if: env.drift == 'true'
@@ -67,7 +67,7 @@ jobs:
     - name: Push Docker image to Docker Hub
       if: env.drift == 'true'
       run: |
-        docker push username/mlops_project:latest
+        docker push cornelliusyudhawijaya/diabetes_prediction:latest
 
     - name: Notify about the process
       run: |
@@ -75,4 +75,3 @@ jobs:
           echo "No data drift detected. No retraining necessary."
         else
           echo "Data drift detected. Model retrained and deployed."
-
